@@ -26,7 +26,7 @@ app.use('/api/persons', personRouter);
 app.use('/info', infoRouter);
 
 app.get('/', (req, res) => {
-  res.sendFile(`${__dirname}/html/links.html`);
+  res.sendFile(`${__dirname}/build/index.html`);
 });
 
 const PORT = process.env.PORT || 3000;
