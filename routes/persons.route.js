@@ -25,8 +25,22 @@ const personData = [
     }
 ]
 
+const noDataFound = {
+  error: 'No data found'
+}
+
 router.get('/', (req, res) => {
   res.json(personData);
+});
+
+router.get('/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const person = personData.find(person => person.id === id);
+  if (person) {
+    res.status(200).json(person);
+  } else {
+    res.status(404).json(noDataFound);
+  }
 });
 
 module.exports = router;
