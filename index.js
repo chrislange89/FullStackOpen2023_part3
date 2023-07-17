@@ -9,11 +9,13 @@ const personRouter = require('./routes/persons.route');
 const infoRouter = require('./routes/info.route');
 
 dotenv.config();
+morgan.token('body', (req) => JSON.stringify(req.body));
+const morganFormat = ':method :url :status :res[content-length] - :response-time ms :body';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use(morgan('tiny'));
+app.use(morgan(morganFormat));
 
 app.use('/api/persons', personRouter);
 app.use('/info', infoRouter);
