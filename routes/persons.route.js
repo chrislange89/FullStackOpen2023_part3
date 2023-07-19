@@ -74,6 +74,7 @@ router.delete('/:id', (req, res) => {
   }
 });
 
+// eslint-disable-next-line consistent-return
 router.put('/:id', (req, res) => {
   const { id } = req.params;
   const { name, number } = req.body;
@@ -95,6 +96,7 @@ router.put('/:id', (req, res) => {
   }
 });
 
+// eslint-disable-next-line consistent-return
 router.post('/', (req, res) => {
   const { name, number } = req.body;
   if (!name || !number) {
