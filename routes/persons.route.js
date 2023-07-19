@@ -89,35 +89,36 @@ router.put('/:id', (req, res) => {
       console.log(err);
       return res.status(404).json(errors.noDataFound);
     });
+
+  return res.status(500).json(errors.internalServerError);
 });
 
 router.post('/', (req, res) => {
   const { name, number } = req.body;
   if (!name || !number) {
-    return res.status(400).json(errors.missingDetails);
+    return res.json(errors.missingDetails);
   }
 
   // if the person with that name already exists return an error
-  Phonebook.find({ name }).then((result) => {
+  Phonebook.find({ name }).then(async (result) => {
     if (result.length > 0) {
       return res.status(400).json(errors.notUnique);
     }
-  });
-
-  const newPerson = new Phonebook({
-    name,
-    number,
-  });
-
-  newPerson.save()
-    .then((result) => {
-      console.log(result);
-      return res.status(201).json(result);
-    })
-    .catch((err) => {
+    const newPerson = new Phonebook({
+      name,
+      number,
+    });
+    try {
+      const savedPerson = await newPerson.save();
+      console.log(savedPerson);
+      return res.status(201).json(savedPerson);
+    } catch (err) {
       console.log(err);
       return res.status(500).json(errors.internalServerError);
-    });
+    }
+  });
+
+  return res.status(500).json(errors.internalServerError);
 });
 
 module.exports = router;
