@@ -93,8 +93,6 @@ router.put('/:id', (req, res) => {
   } catch {
     return res.status(500).json(errors.internalServerError);
   }
-
-  return res.status(500).json(errors.internalServerError);
 });
 
 router.post('/', (req, res) => {
@@ -121,8 +119,6 @@ router.post('/', (req, res) => {
       return res.status(500).json(errors.internalServerError);
     }
   });
-
-  return res.status(500).json(errors.internalServerError);
 });
 
 module.exports = router;
