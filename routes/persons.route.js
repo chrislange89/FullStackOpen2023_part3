@@ -38,14 +38,21 @@ const errors = {
   notUnique: {
     error: 'name must be unique',
   },
+  internalServerError: {
+    error: 'Internal server error',
+  },
 };
 
-router.get('/', (req, res) => {
-  res.json(personData);
+const Phonebook = require('../models/phonebook.model');
+
+router.get('/', async (req, res) => {
+  await Phonebook.find({}).then((result) => {
+    res.json(result);
+  });
 });
 
 router.get('/:id', (req, res) => {
-  const id = Number(req.params.id);
+  const { id } = req.params;
   const personToReturn = personData.find((person) => person.id === id);
   if (personToReturn) {
     res.status(200).json(personToReturn);
@@ -56,10 +63,12 @@ router.get('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  const personToDelete = personData.find((person) => person.id === id);
+  const personToDelete = Phonebook.findById(id);
   if (personToDelete) {
-    personData.splice(personData.indexOf(personToDelete), 1);
-    res.status(204).end();
+    Phonebook.findByIdAndDelete(id).then((result) => {
+      console.log(result);
+      res.status(204).json(result);
+    });
   } else {
     res.status(404).json(errors.noDataFound);
   }
@@ -67,43 +76,48 @@ router.delete('/:id', (req, res) => {
 
 router.put('/:id', (req, res) => {
   const { id } = req.params;
-  const personToUpdate = personData.find((person) => person.id === id);
-  if (personToUpdate) {
-    if (!req.body.name || !req.body.number) {
-      return res.status(400).json(errors.nameMissing);
-    }
-
-    const updatedPerson = {
-      id: personToUpdate.id,
-      name: req.body.name,
-      number: req.body.number,
-    };
-    personData.splice(personData.indexOf(personToUpdate), 1, updatedPerson);
-    return res.status(200).json(updatedPerson);
-  }
-
-  return res.status(404).json(errors.noDataFound);
-});
-
-router.post('/', (req, res) => {
-  if (!req.body.name || !req.body.number) {
+  const { name, number } = req.body;
+  if (!name || !number) {
     return res.status(400).json(errors.missingDetails);
   }
 
-  const personExists = personData.find((person) => person.name === req.body.name);
+  // find person in mongoose and update using findByIdAndUpdate,
+  // then return the updated person
+  Phonebook.findByIdAndUpdate(id, { name, number }, { new: true })
+    .then((updatedPerson) => res.json(updatedPerson))
+    .catch((err) => {
+      console.log(err);
+      return res.status(404).json(errors.noDataFound);
+    });
+});
 
-  if (personExists) {
-    return res.status(400).json(errors.notUnique);
+router.post('/', (req, res) => {
+  const { name, number } = req.body;
+  if (!name || !number) {
+    return res.status(400).json(errors.missingDetails);
   }
 
-  const newPerson = {
-    id: crypto.randomUUID(),
-    name: req.body.name,
-    number: req.body.number,
-  };
+  // if the person with that name already exists return an error
+  Phonebook.find({ name }).then((result) => {
+    if (result.length > 0) {
+      return res.status(400).json(errors.notUnique);
+    }
+  });
 
-  personData.push(newPerson);
-  return res.status(201).json(newPerson);
+  const newPerson = new Phonebook({
+    name,
+    number,
+  });
+
+  newPerson.save()
+    .then((result) => {
+      console.log(result);
+      return res.status(201).json(result);
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).json(errors.internalServerError);
+    });
 });
 
 module.exports = router;

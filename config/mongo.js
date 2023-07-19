@@ -19,13 +19,22 @@ const phonebookSchema = new mongoose.Schema({
   number: String,
 });
 
+phonebookSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
+
 const Phonebook = mongoose.model('Phonebook', phonebookSchema);
 
 if (process.argv[3] === undefined || process.argv[4] === undefined) {
   Phonebook.find({}).then((result) => {
     console.log('Phonebook:');
     result.forEach((personFound) => {
-      console.log(`${personFound.name} ${personFound.number}`);
+      console.log(personFound.toJSON());
+      // console.log(`${personFound.name} ${personFound.number}`);
     });
     db.close();
     process.exit(1);

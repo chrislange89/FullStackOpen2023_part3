@@ -13,5 +13,7 @@ module.exports = {
   rules: {
     'no-console': 'off',
     'linebreak-style': ['error', 'windows'],
+    'no-underscore-dangle': 'off',
+    'no-param-reassign': 'off',
   },
 };
