@@ -2,29 +2,6 @@ const { Router } = require('express');
 
 const router = Router();
 
-const personData = [
-  {
-    id: '1',
-    name: 'Arto Hellas',
-    number: '040-123456',
-  },
-  {
-    id: '2',
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
-  },
-  {
-    id: '3',
-    name: 'Dan Abramov',
-    number: '12-43-234345',
-  },
-  {
-    id: '4',
-    name: 'Mary Poppendieck',
-    number: '39-23-6423122',
-  },
-];
-
 const errors = {
   nameMissing: {
     error: 'name is missing',
@@ -53,12 +30,13 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  const personToReturn = personData.find((person) => person.id === id);
-  if (personToReturn) {
-    res.status(200).json(personToReturn);
-  } else {
-    res.status(404).json(errors.noDataFound);
-  }
+  Phonebook.findById(id).then((result) => {
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(404).json(errors.noDataFound);
+    }
+  });
 });
 
 router.delete('/:id', (req, res) => {
@@ -82,8 +60,6 @@ router.put('/:id', (req, res) => {
     return res.status(400).json(errors.missingDetails);
   }
 
-  // find person in mongoose and update using findByIdAndUpdate,
-  // then return the updated person
   try {
     Phonebook.findByIdAndUpdate(id, { name, number }, { new: true })
       .then((updatedPerson) => res.json(updatedPerson))
