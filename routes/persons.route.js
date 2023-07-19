@@ -83,12 +83,16 @@ router.put('/:id', (req, res) => {
 
   // find person in mongoose and update using findByIdAndUpdate,
   // then return the updated person
-  Phonebook.findByIdAndUpdate(id, { name, number }, { new: true })
-    .then((updatedPerson) => res.json(updatedPerson))
-    .catch((err) => {
-      console.log(err);
-      return res.status(404).json(errors.noDataFound);
-    });
+  try {
+    Phonebook.findByIdAndUpdate(id, { name, number }, { new: true })
+      .then((updatedPerson) => res.json(updatedPerson))
+      .catch((err) => {
+        console.log(err);
+        return res.status(404).json(errors.noDataFound);
+      });
+  } catch {
+    return res.status(500).json(errors.internalServerError);
+  }
 
   return res.status(500).json(errors.internalServerError);
 });
