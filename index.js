@@ -3,6 +3,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 
+const errorHandler = require('./middlewares/error.middleware');
+
 const app = express();
 
 // routers
@@ -20,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(morgan(morganFormat));
 app.use(express.static('build'));
+app.use(errorHandler);
 
 // routes
 app.use('/api/persons', personRouter);

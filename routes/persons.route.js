@@ -22,10 +22,13 @@ const errors = {
 
 const Phonebook = require('../models/phonebook.model');
 
-router.get('/', async (req, res) => {
-  await Phonebook.find({}).then((result) => {
-    res.json(result);
-  });
+router.get('/', async (_req, res, next) => {
+  try {
+    const result = await Phonebook.find({});
+    return res.json(result);
+  } catch {
+    return next(errors.internalServerError);
+  }
 });
 
 router.get('/:id', (req, res) => {
