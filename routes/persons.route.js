@@ -31,15 +31,17 @@ router.get('/', async (_req, res, next) => {
   }
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res, next) => {
   const { id } = req.params;
-  Phonebook.findById(id).then((result) => {
+  try {
+    const result = await Phonebook.findById(id);
     if (result) {
-      res.json(result);
-    } else {
-      res.status(404).json(errors.noDataFound);
+      return res.json(result);
     }
-  });
+    return res.status(404).json(errors.noDataFound);
+  } catch {
+    return next(errors.internalServerError);
+  }
 });
 
 router.delete('/:id', (req, res) => {
