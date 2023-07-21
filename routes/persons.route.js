@@ -4,12 +4,12 @@ const mongoose = require('mongoose');
 const router = Router();
 
 const ErrorMessages = {
-  NAME_MISSING: 'name is missing',
+  NAME_MISSING: new Error('name is missing'),
   NO_DATA_FOUND: 'No data found',
   MISSING_DETAILS: 'Name or number is missing',
   NOT_UNIQUE: 'Name must be unique',
   INTERNAL_SERVER_ERROR: 'Internal server error',
-  INVALID_ID: 'Invalid id',
+  INVALID_ID: new Error('Invalid id'),
 };
 
 const Phonebook = require('../models/phonebook.model');
@@ -28,14 +28,15 @@ router.get('/', async (_req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json(ErrorMessages.INVALID_ID);
+    next(ErrorMessages.INVALID_ID);
+    // return res.status(400).json(ErrorMessages.INVALID_ID.message);
   }
   try {
     const result = await Phonebook.findById(mongoose.Types.ObjectId(id));
     if (result) {
       return res.json(result);
     }
-    return res.status(404).json(ErrorMessages.NO_DATA_FOUND);
+    return res.status(404).json(ErrorMessages.NO_DATA_FOUND.message);
   } catch (err) {
     next(err);
   }

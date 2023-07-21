@@ -10,7 +10,7 @@ const errorHandler = (err, _req, res, next) => {
     console.log('MongoError');
     return res.status(400).json({ error: err.message });
   }
-  return next(err);
+  return next();
 };
 
 module.exports = errorHandler;
