@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "startdb": "cd C:/Users/e101380/scoop/apps/mongodb/current/bin && mongod.exe --dbpath=C:\\Personal\\data\\db\\"
   },
   "author": "",
   "license": "ISC",

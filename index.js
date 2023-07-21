@@ -27,6 +27,9 @@ app.use(errorHandler);
 // routes
 app.use('/api/persons', personRouter);
 app.use('/info', infoRouter);
+app.use((req, res) => {
+  res.status(404).json({ error: 'Endpoint not found' });
+});
 
 app.get('/', (req, res) => {
   res.sendFile(`${__dirname}/build/index.html`);
